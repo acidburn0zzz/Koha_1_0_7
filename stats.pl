@@ -67,7 +67,7 @@ for (my $i=0;$i<$count;$i++){
     if ($charges[$i2]->{'accounttype'} eq 'Rent'){
       $temptotalr+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
     }
-    if ($charges[$i2]->{'accounttype'} eq 'F'){
+    if ($charges[$i2]->{'accounttype'} eq 'F' || $charges[$i2]->{'accounttype'} eq 'FU'){
       $temptotalf+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
     }
     if ($charges[$i2]->{'accounttype'} eq 'Res'){
