@@ -215,13 +215,13 @@ print <<printend
 <TR VALIGN=TOP>
 <TD>Replacement Cost <br>
 <FONT SIZE=2>(NZ\$ inc GST)</td>
-<td><input type=text size=20 name=rrp value="" onchange='update(this.form)'>
+<td><input type=text size=20 name=rrp value="$data->{'rrp'}" onchange='update(this.form)'>
 </tr>
 <TR VALIGN=TOP>
 <TD>
 Budgeted Cost<BR>
 <FONT SIZE=2>(NZ\$ ex GST, inc discount)</FONT> </td>
-<td><input type=text size=20 name=ecost value="" onchange='update(this.form)'>
+<td><input type=text size=20 name=ecost value="$data->{'ecost'}" onchange='update(this.form)'>
 </td>
 </tr>
 <TR VALIGN=TOP>
