@@ -85,7 +85,7 @@ sub NewBorrowerNumber {
 
 sub OpacSearch {
   my ($env,$type,$search,$num,$offset)=@_;
-  my $dbh = &OpacConnect;
+  my $dbh = &C4Connect;
   $search->{'keyword'}=~ s/'/\\'/g;
   my @key=split(' ',$search->{'keyword'});
   my $count=@key;
@@ -782,10 +782,10 @@ sub itemissues {
   my ($bibitem,$biblio)=@_;
   my $dbh=C4Connect;
   my $query="Select * from items where 
-  items.biblioitemnumber=$bibitem";
+  items.biblioitemnumber='$bibitem'";
 #  print $query;
-  my $sth=$dbh->prepare($query);
-  $sth->execute;
+  my $sth=$dbh->prepare($query) || die $dbh->errstr;
+  $sth->execute || die $sth->errstr;
   my $i=0;
   my @results;
   while (my $data=$sth->fetchrow_hashref){
@@ -812,9 +812,9 @@ sub itemissues {
     $query2="select * from issues,borrowers where itemnumber='$data->{'itemnumber'}'
     and issues.borrowernumber=borrowers.borrowernumber 
     order by date_due desc";
-    my $sth2=$dbh->prepare($query2);
+    my $sth2=$dbh->prepare($query2) || die $dbh->errstr;
 #   print $query2;
-    $sth2->execute;
+    $sth2->execute || die $sth2->errstr;
     for (my $i2=0;$i2<2;$i2++){
       if (my $data2=$sth2->fetchrow_hashref){
         $data->{"timestamp$i2"}=$data2->{'timestamp'};
