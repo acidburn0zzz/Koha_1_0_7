@@ -16,6 +16,7 @@ my $user=$input->remote_user;
 my $biblio=$input->param('biblio');
 my $ordnum=$input->param('ordnum');
 my $quantrec=$input->param('quantityrec');
+my $quantity=$input->param('quantity');
 my $notes=$input->param('notes');
 my $cost=$input->param('cost');
 my $invoiceno=$input->param('invoice');
@@ -61,30 +62,36 @@ if ($itemtype =~ /PER/){
   $bibitemno=newbiblioitem($biblio,$itemtype,$isbn,$volinf,$class);
 #  print "here $bibitemno";
 }
-receiveorder($biblio,$ordnum,$quantrec,$user,$cost,$invoiceno,$bibitemno,$freight,$bookfund);
-modbiblio($biblio,$title,$author,$copyright,$series);
-modbibitem($bibitemno,$itemtype,$isbn,$publisher,$pubdate,$class,$dewey,$subclass,$illus,$pages,$volinf,$notes,$size);
-#print $notes;
-my $barcode=$input->param('barcode');
-my @barcodes;
-if ($barcode =~ /\,/){
-  @barcodes=split(/\,/,$barcode);
-}elsif ($barcode =~ /\|/){
-  @barcodes=split(/\|/,$barcode);
-} else {
-  $barcodes[0]=$barcode;
-#  print $input->header;
-#  print @barcodes;
-#  print $barcode;
-}
-my ($error)=makeitems($quantrec,$bibitemno,$biblio,$replacement,$cost,$bookseller,$branch,$loan,@barcodes);
-if ($error eq ''){
-  if ($itemtype ne 'PER'){
-    print $input->redirect("/cgi-bin/koha/acqui/receive.pl?invoice=$invoiceno&id=$id&freight=$freight&gst=$gst");
+if ($quantity != 0){
+  receiveorder($biblio,$ordnum,$quantrec,$user,$cost,$invoiceno,$bibitemno,$freight,$bookfund);
+  modbiblio($biblio,$title,$author,$copyright,$series);
+  modbibitem($bibitemno,$itemtype,$isbn,$publisher,$pubdate,$class,$dewey,$subclass,$illus,$pages,$volinf,$notes,$size);
+  #print $notes;
+  my $barcode=$input->param('barcode');
+  my @barcodes;
+  if ($barcode =~ /\,/){
+    @barcodes=split(/\,/,$barcode);
+  }elsif ($barcode =~ /\|/){
+    @barcodes=split(/\|/,$barcode);
   } else {
-    print $input->redirect("/acquisitions/");
+    $barcodes[0]=$barcode;
+  #  print $input->header;
+  #  print @barcodes;
+  #  print $barcode;
+  }
+  my ($error)=makeitems($quantrec,$bibitemno,$biblio,$replacement,$cost,$bookseller,$branch,$loan,@barcodes);
+  if ($error eq ''){
+    if ($itemtype ne 'PER'){
+      print $input->redirect("/cgi-bin/koha/acqui/receive.pl?invoice=$invoiceno&id=$id&freight=$freight&gst=$gst");
+    } else {
+      print $input->redirect("/acquisitions/");
+    }
+  } else {
+    print $input->header;
+    print $error;
   }
 } else {
   print $input->header;
-  print $error;
+  delorder($biblio,$ordnum);
+       print $input->redirect("/acquisitions/");
 }

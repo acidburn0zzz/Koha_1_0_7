@@ -19,7 +19,9 @@ my ($count,@booksellers)=bookseller($id);
 my $ordnum=$input->param('ordnum');
 my $biblio=$input->param('biblio');
 my $data;
+my $new;
 if ($ordnum eq ''){
+  $new='yes';
   $ordnum=newordernum;
   $data=bibdata($biblio);
   if ($data->{'title'} eq ''){
@@ -119,7 +121,7 @@ my ($count2,$currencies)=getcurrencies;
 for (my $i=0;$i<$count2;$i++){
   print "<input type=hidden name=\"$currencies->[$i]->{'currency'}\" value=$currencies->[0]->{'rate'}>\n";
 }
-if ($data->{'listprice'} > 0){
+if ($new ne 'yes'){
   print "<input type=hidden name=orderexists value=yes>\n";
 }
 print <<printend
