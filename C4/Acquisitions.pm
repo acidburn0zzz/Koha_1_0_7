@@ -74,6 +74,18 @@ sub getorders {
   return ($i,\@results);
 }
 
+sub itemcount{
+  my ($biblio)=@_;
+  my $dbh=C4Connect;
+  my $query="Select count(*) from items where biblionumber=$biblio";
+  my $sth=$dbh->prepare($query);
+  $sth->execute;
+  my $data=$sth->fetchrow_hashref;
+  $sth->finish;
+  $dbh->disconnect;
+  return($data->{'count(*)'});
+}
+
 sub getorder{
   my ($bi,$bib)=@_;
   my $dbh=C4Connect;
@@ -155,6 +167,8 @@ sub ordersearch {
   my $query="Select *,biblio.title from aqorders,biblioitems,biblio
   where aqorders.biblioitemnumber=
   biblioitems.biblioitemnumber and biblio.biblionumber=aqorders.biblionumber 
+  and (datecancellationprinted is NULL or datecancellationprinted =
+'000-00-00')
   and ((";
   my @data=split(' ',$search);
   my $count=@data;
@@ -165,7 +179,7 @@ sub ordersearch {
   $query.=" ) or biblioitems.isbn='$search' 
   or (aqorders.ordernumber='$search' and aqorders.biblionumber='$biblio')) ";
   if ($catview ne 'yes'){
-    $query.=" and quantityreceived < quantity";
+    $query.=" and (quantityreceived < quantity or quantityreceived is NULL)";
   }
   $query.=" group by aqorders.ordernumber";
   my $sth=$dbh->prepare($query);
@@ -517,16 +531,23 @@ sub neworder {
   my ($bibnum,$title,$ordnum,$basket,$quantity,$listprice,$supplier,$who,
   $notes,$bookfund,$bibitemnum,$rrp,$ecost,$gst)=@_;
   my $dbh=C4Connect;
-  my $query="insert into aqorders (biblionumber,title,ordernumber,basketno,
+  my $query="insert into aqorders (biblionumber,title,basketno,
   quantity,listprice,booksellerid,entrydate,requisitionedby,authorisedby,notes,
   biblioitemnumber,rrp,ecost,gst) 
   values
-  ($bibnum,'$title',$ordnum,$basket,$quantity,$listprice,'$supplier',now(),
+  ($bibnum,'$title',$basket,$quantity,$listprice,'$supplier',now(),
   '$who','$who','$notes',$bibitemnum,'$rrp','$ecost','$gst')";
   my $sth=$dbh->prepare($query);
 #  print $query;
   $sth->execute;
   $sth->finish;
+  $query="select * from aqorders where
+  biblionumber=$bibnum and basketno=$basket and ordernumber >=$ordnum";
+  $sth=$dbh->prepare($query);
+  $sth->execute;
+  my $data=$sth->fetchrow_hashref;
+  $sth->finish;
+  $ordnum=$data->{'ordernumber'};
   $query="insert into aqorderbreakdown (ordernumber,bookfundid) values
   ($ordnum,'$bookfund')";
   $sth=$dbh->prepare($query);
@@ -543,9 +564,13 @@ sub delorder {
   where biblionumber='$bibnum' and
   ordernumber='$ordnum'";
   my $sth=$dbh->prepare($query);
-#  print $query;
+  print $query;
   $sth->execute;
   $sth->finish;
+  my $count=itemcount($bibnum);
+  if ($count == 0){
+    delbiblio($bibnum);
+  }
   $dbh->disconnect;
 }
 
