@@ -61,7 +61,7 @@ if ($itemtype =~ /PER/){
   $bibitemno=newbiblioitem($biblio,$itemtype,$isbn,$volinf,$class);
 #  print "here $bibitemno";
 }
-receiveorder($biblio,$ordnum,$quantrec,$user,$cost,$invoiceno,$bibitemno,$freight);
+receiveorder($biblio,$ordnum,$quantrec,$user,$cost,$invoiceno,$bibitemno,$freight,$bookfund);
 modbiblio($biblio,$title,$author,$copyright,$series);
 modbibitem($bibitemno,$itemtype,$isbn,$publisher,$pubdate,$class,$dewey,$subclass,$illus,$pages,$volinf,$notes,$size);
 #print $notes;

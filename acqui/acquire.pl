@@ -21,8 +21,9 @@ my $search=$input->param('recieve');
 my $invoice=$input->param('invoice');
 my $freight=$input->param('freight');
 my $biblio=$input->param('biblio');
+my $catview=$input->param('catview');
 my $gst=$input->param('gst');
-my ($count,@results)=ordersearch($search,$biblio);
+my ($count,@results)=ordersearch($search,$biblio,$catview);
 my ($count2,@booksellers)=bookseller($results[0]->{'booksellerid'}); 
 #print $count;
 my @date=split('-',$results[0]->{'entrydate'});
@@ -53,7 +54,14 @@ win.document.write("</font></body></html>");
 <input type=hidden name=bookseller value=$results[0]->{'booksellerid'}>
 <input type=hidden name=freight value=$freight>
 <input type=hidden name=gst value=$gst>
-<input type=image  name=submit src=/images/save-changes.gif border=0 width=187 height=42 align=right>
+EOP
+;
+if ($catview ne 'yes'){
+  print "<input type=image  name=submit src=/images/save-changes.gif border=0 width=187 height=42 align=right>";
+} else {
+  print "<a href=/cgi-bin/koha/acqui/newbiblio.pl?ordnum=$results[0]->{'ordernumber'}&id=$results[0]->{'booksellerid'}><image src=/images/modify-mem.gif align=right border=0></a>";
+}
+print <<EOP
 <FONT SIZE=6><em>$results[0]->{'ordernumber'} - Receive Order</em></FONT><br>
 Shopping Basket For: $booksellers[0]->{'name'}
 <br> Order placed: $date
