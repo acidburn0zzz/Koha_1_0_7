@@ -16,7 +16,7 @@ $VERSION = 0.01;
  &bookfundbreakdown &curconvert &updatesup &insertsup &makeitems &modbibitem
 &getcurrencies &modsubtitle &modsubject &modaddauthor &moditem &countitems 
 &findall &needsmod &delitem &delbibitem &delbiblio &delorder &branches
-&getallorders &updatecurrencies);
+&getallorders &updatecurrencies &getorder);
 %EXPORT_TAGS = ( );     # eg: TAG => [ qw!name1 name2! ],
 
 # your exported package globals go here,
@@ -72,6 +72,21 @@ sub getorders {
   $sth->finish;
   $dbh->disconnect;
   return ($i,\@results);
+}
+
+sub getorder{
+  my ($bi,$bib)=@_;
+  my $dbh=C4Connect;
+  my $query="Select ordernumber from aqorders where biblionumber=$bib and
+  biblioitemnumber='$bi'";
+  my $sth=$dbh->prepare($query);
+  $sth->execute;
+  my $ordnum=$sth->fetchrow_hashref;
+  $sth->finish;
+  my $order=getsingleorder($ordnum->{'ordernumber'});
+  $dbh->disconnect;
+#  print $query;
+  return ($order);
 }
 
 sub getsingleorder {

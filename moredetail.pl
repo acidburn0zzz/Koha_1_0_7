@@ -8,6 +8,7 @@ use strict;
 use C4::Search;
 use CGI;
 use C4::Output;
+use C4::Acquisitions;
 
 my $input = new CGI;
 print $input->header;
@@ -33,6 +34,7 @@ my $bi=$input->param('bi');
 my $data=bibitemdata($bi);
 
 my (@items)=itemissues($bi);
+my ($order)=getorder($bi,$bib);
 #print @items;
 my $count=@items;
 
@@ -141,7 +143,7 @@ print <<printend
 <b>paid by:</b><br>
 <b>Notes:</b> $items[$i]->{'itemnotes'}<br>
 <b>Renewals:</b> $items[$i]->{'renewals'}<br>
-<b>Accession Date: $items[$i]->{'dateaccessioned'}<br>
+<b><a href=/cgi-bin/koha/acqui/acquire.pl?recieve=$order->{'ordernumber'}&biblio=$bib>Accession</a> Date: $items[$i]->{'dateaccessioned'}<br>
 printend
 ;
 if ($items[$i]->{'wthdrawn'} eq '1'){
