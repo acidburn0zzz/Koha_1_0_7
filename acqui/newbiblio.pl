@@ -116,7 +116,7 @@ printend
 ;
 my ($count2,$currencies)=getcurrencies;
 for (my $i=0;$i<$count2;$i++){
-  print "<input type=hidden name=\"$currencies->[$i]->{'currency'}\" value=$currencies->[0]->{'rate'}>";
+  print "<input type=hidden name=\"$currencies[$i]->{'currency'}\" value=$currencies[0]->{'rate'}>";
 }
 
 print <<printend;
