@@ -110,23 +110,21 @@ print endcenter;
 print "<p><b>$total</b>";
 #print "<b
 print mktablehdr;
-
-print mktablerow(6,'white',"<b>Levin</b>","Fines $levin{'totalf'}","Rentals $levin{'totalr'}","Reserves $levin{'totalres'}","Renewals $levin{'totalren'}","Total $levin{'total'}");
-print mktablerow(6,'white',"<b>foxton</b>","Fines $foxton{'totalf'}","Rentals $foxton{'totalr'}","Reserves $foxton{'totalres'}","Renewals $foxton{'totalren'}","Total $foxton{'total'}");
-print mktablerow(6,'white',"<b>shannon</b>","Fines $shannon{'totalf'}","Rentals $shannon{'totalr'}","Reserves $shannon{'totalres'}","Renewals $shannon{'totalren'}","Total $shannon{'total'}");
+$levin{'issues'}=Count('issue','C',$date,$date2);
+$foxton{'issues'}=Count('issue','F',$date,$date2);
+$shannon{'issues'}=Count('issue','S',$date,$date2);
+$levin{'returns'}=Count('return','C',$date,$date2);
+$foxton{'returns'}=Count('return','F',$date,$date2);
+$shannon{'returns'}=Count('return','S',$date,$date2);
+print mktablerow(9,'white',"<b>Levin</b>","Fines $levin{'totalf'}","Rental Charges $levin{'totalr'}",
+"Reserve Charges $levin{'totalres'}","Renewal Charges $levin{'totalren'}","Total $levin{'total'}",
+"Issues $levin{'issues'}","Renewals $levin{'renewals'}","Returns $levin{'returns'}");
+print mktablerow(9,'white',"<b>foxton</b>","Fines $foxton{'totalf'}","Rental Charges $foxton{'totalr'}","Reserve Charges $foxton{'totalres'}","Renewal Charges $foxton{'totalren'}","Total $foxton{'total'}",
+"Issues $foxton{'issues'}","Renewals $foxton{'renewals'}","Returns $foxton{'returns'}");
+print mktablerow(9,'white',"<b>shannon</b>","Fines $shannon{'totalf'}","Rental Charges $shannon{'totalr'}","Reserve Charges $shannon{'totalres'}","Renewal Charges $shannon{'totalren'}","Total $shannon{'total'}",
+"Issues $shannon{'issues'}","Renewals $shannon{'renewals'}","Returns $shannon{'returns'}");
 print mktableft;
-#my $issues=Count('issue','C',$date,$date2);
-#print "<p>Issues Levin: $issues";
-#$issues=Count('issue','F',$date,$date2);
-#print "<br>Issues Foxton: $issues";
-#$issues=Count('issue','S',$date,$date2);
-#print "<br>Issues Shannon: $issues";
-#my $returns=Count('return','C',$date,$date2);
-#print "<p>Returns Levin: $returns";
-#$returns=Count('return','F',$date,$date2);
-#print "<br>Returns Foxton: $returns";
-#$returns=Count('return','S',$date,$date2);
-#print "<br>Returns Shannon: $returns";
+
 
 print endmenu('report');
 print endpage;
