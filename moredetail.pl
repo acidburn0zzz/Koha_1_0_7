@@ -143,7 +143,7 @@ print <<printend
 <b>paid by:</b><br>
 <b>Notes:</b> $items[$i]->{'itemnotes'}<br>
 <b>Renewals:</b> $items[$i]->{'renewals'}<br>
-<b><a href=/cgi-bin/koha/acqui/acquire.pl?recieve=$order->{'ordernumber'}&biblio=$bib&invoice=$order->{'booksellerinvoicenumber'}>Accession</a> Date: $items[$i]->{'dateaccessioned'}<br>
+<b><a href=/cgi-bin/koha/acqui/acquire.pl?recieve=$order->{'ordernumber'}&biblio=$bib&invoice=$order->{'booksellerinvoicenumber'}&catview=yes>Accession</a> Date: $items[$i]->{'dateaccessioned'}<br>
 printend
 ;
 if ($items[$i]->{'wthdrawn'} eq '1'){
