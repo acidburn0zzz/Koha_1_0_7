@@ -198,7 +198,7 @@ sub bulkrenew {
           C4::Circulation::Issues::createcharge($env,$dbh,
 	  $issrec->{'itemnumber'},$issrec->{'borrowernumber'},$charge);
         }
-        &UpdateStats($env,$env->{'branchcode'},'renew',$charge);
+        &UpdateStats($env,$env->{'branchcode'},'renew',$charge,'',$issrec->{'itemnumber'});
       } elsif ($rstatuses[$x] eq "N") {
         C4::InterfaceCDK::info_msg($env,
 	   "</S>$barcodes[$x] - can't renew");	

@@ -254,7 +254,7 @@ sub returnrecord {
     $usth->finish;
   } 
   $sth->finish;
-  UpdateStats($env,'branch','return','0');
+  UpdateStats($env,'branch','return','0','',$itemno);
   return($oduecharge);
 }
 

@@ -219,7 +219,7 @@ sub issueitem{
          if ($charge > 0) {
            createcharge($env,$dbh,$item->{'itemnumber'},$bornum,$charge);
 	 }
-	 &UpdateStats($env,$env->{'branchcode'},'renew',$charge);
+         &UpdateStats($env,$env->{'branchcode'},'renew',$charge,'',$item->{'itemnumber'},$item->{'itemtype'});
        }  
      } 
      if ($canissue == 1) {
@@ -273,7 +273,7 @@ sub issueitem{
        #now mark as issued
        $datedue=&updateissues($env,$item->{'itemnumber'},$item->{'biblioitemnumber'},$dbh,$bornum);
        #debug_msg("","date $datedue");
-       &UpdateStats($env,$env->{'branchcode'},'issue',$charge);
+       &UpdateStats($env,$env->{'branchcode'},'issue',$charge,'',$item->{'itemnumber'},$item->{'itemtype'});
        if ($charge > 0) {
          createcharge($env,$dbh,$item->{'itemnumber'},$bornum,$charge);
        }	  

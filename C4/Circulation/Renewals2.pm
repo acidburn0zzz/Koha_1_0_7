@@ -128,7 +128,7 @@ sub renewbook {
   my $sth=$dbh->prepare($updquery);
   $sth->execute;
   $sth->finish;
-  UpdateStats($env,$env->{'branchcode'},'renew','');
+  UpdateStats($env,$env->{'branchcode'},'renew','','',$itemno);
   $dbh->disconnect;
 #  return();
 }
