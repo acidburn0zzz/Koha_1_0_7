@@ -59,7 +59,8 @@ for (my $i=0;$i<$count;$i++){
   my $count=@charges;
   my $temptotalf=0;
   my $temptotalr=0;
-    my $temptotalres=0;
+  my $temptotalres=0;
+  my $temptotalren=0;
   for (my $i2=0;$i2<$count;$i2++){
     print mktablerow(6,'red',$charges[$i2]->{'description'},$charges[$i2]->{'accounttype'},'',
     $charges[$i2]->{'amount'},$charges[$i2]->{'amountoutstanding'});
@@ -72,6 +73,9 @@ for (my $i=0;$i<$count;$i++){
     if ($charges[$i2]->{'accounttype'} eq 'Res'){
       $temptotalres+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
     }
+    if ($charges[$i2]->{'accounttype'} eq 'R'){
+      $temptotalren+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
+    }
     
   }                 
   my $time2="$payments[$i]{'date'} $time";
@@ -81,18 +85,21 @@ for (my $i=0;$i<$count;$i++){
     $levin{'totalr'}+=$temptotalr;
     $levin{'totalres'}+=$temptotalres;
     $levin{'totalf'}+=$temptotalf;
+    $levin{'totalren'}+=$temptotalren;
   }
   if ($branch eq 'F'){
     $foxton{'total'}+=$payments[$i]{'amount'};
     $foxton{'totalr'}+=$temptotalr;
     $foxton{'totalres'}+=$temptotalres;
     $foxton{'totalf'}+=$temptotalf;
+    $foxton{'totalren'}+=$temptotalren;
   }
   if ($branch eq 'S'){
     $shannon{'total'}+=$payments[$i]{'amount'};
     $shannon{'totalr'}+=$temptotalr;
     $shannon{'totalres'}+=$temptotalres;
     $shannon{'totalf'}+=$temptotalf;
+    $shannon{'totalren'}+=$temptotalren;
   }
   print mktablerow(6,'white',"$payments[$i]{'firstname'} <b>$payments[$i]{'surname'}</b>"
   ,$payments[$i]{'accounttype'},"$payments[$i]{'date'} $time",$payments[$i]{'amount'}
@@ -104,9 +111,9 @@ print "<p><b>$total</b>";
 #print "<b
 print mktablehdr;
 
-print mktablerow(5,'white',"<b>Levin</b>","Fines $levin{'totalf'}","Rentals $levin{'totalr'}","Reserves $levin{'totalres'}","Total $levin{'total'}");
-print mktablerow(5,'white',"<b>foxton</b>","Fines $foxton{'totalf'}","Rentals $foxton{'totalr'}","Reserves $foxton{'totalres'}","Total $foxton{'total'}");
-print mktablerow(5,'white',"<b>shannon</b>","Fines $shannon{'totalf'}","Rentals $shannon{'totalr'}","Reserves $shannon{'totalres'}","Total $shannon{'total'}");
+print mktablerow(6,'white',"<b>Levin</b>","Fines $levin{'totalf'}","Rentals $levin{'totalr'}","Reserves $levin{'totalres'}","Renewals $levin{'totalren'}","Total $levin{'total'}");
+print mktablerow(6,'white',"<b>foxton</b>","Fines $foxton{'totalf'}","Rentals $foxton{'totalr'}","Reserves $foxton{'totalres'}","Renewals $foxton{'totalren'}","Total $foxton{'total'}");
+print mktablerow(6,'white',"<b>shannon</b>","Fines $shannon{'totalf'}","Rentals $shannon{'totalr'}","Reserves $shannon{'totalres'}","Renewals $shannon{'totalren'}","Total $shannon{'total'}");
 print mktableft;
 #my $issues=Count('issue','C',$date,$date2);
 #print "<p>Issues Levin: $issues";
