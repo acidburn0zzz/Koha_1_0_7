@@ -41,6 +41,11 @@ $date2=UnixDate($date2,'%Y-%m-%d');
 my @payments=TotalPaid($date);
 my $count=@payments;
 my $total=0;
+my %levin;
+my %foxton;
+my %shannon;
+#my $totalc=0;
+#my $totalcf=0;
 print mktablehdr;
 print mktablerow(5,'#99cc33',bold('Name'),bold('Type'),bold('Date/time'),bold('Amount'), bold('Branch'),'/images/background-mem.gif');
 for (my $i=0;$i<$count;$i++){
@@ -50,16 +55,45 @@ for (my $i=0;$i<$count;$i++){
   my $time="$hour:$min:$sec";
   $payments[$i]{'amount'}*=-1;
   $total+=$payments[$i]{'amount'};
-#  my @charges=getcharges($payments[$i]{'borrowernumber'},$payments[$i]{'timestamp'});
-#  my $count=@charges;
-#  for (my $i2=0;$i2<$count;$i2++){
-#    print mktablerow(6,'red',$charges[$i2]->{'description'},$charges[$i2]->{'accounttype'},
-#    '',
-#    $charges[$i2]->{'amount'},$charges[$i2]->{'amountoutstanding'});
-#  }
+  my @charges=getcharges($payments[$i]{'borrowernumber'},$payments[$i]{'timestamp'});
+  my $count=@charges;
+  my $temptotalf=0;
+  my $temptotalr=0;
+    my $temptotalres=0;
+  for (my $i2=0;$i2<$count;$i2++){
+    print mktablerow(6,'red',$charges[$i2]->{'description'},$charges[$i2]->{'accounttype'},'',
+    $charges[$i2]->{'amount'},$charges[$i2]->{'amountoutstanding'});
+    if ($charges[$i2]->{'accounttype'} eq 'Rent'){
+      $temptotalr+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
+    }
+    if ($charges[$i2]->{'accounttype'} eq 'F'){
+      $temptotalf+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
+    }
+    if ($charges[$i2]->{'accounttype'} eq 'Res'){
+      $temptotalres+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
+    }
+    
+  }                 
   my $time2="$payments[$i]{'date'} $time";
   my $branch=Getpaidbranch($time2);
-  
+  if ($branch eq 'C'){
+    $levin{'total'}+=$payments[$i]{'amount'};
+    $levin{'totalr'}+=$temptotalr;
+    $levin{'totalres'}+=$temptotalres;
+    $levin{'totalf'}+=$temptotalf;
+  }
+  if ($branch eq 'F'){
+    $foxton{'total'}+=$payments[$i]{'amount'};
+    $foxton{'totalr'}+=$temptotalr;
+    $foxton{'totalres'}+=$temptotalres;
+    $foxton{'totalf'}+=$temptotalf;
+  }
+  if ($branch eq 'S'){
+    $shannon{'total'}+=$payments[$i]{'amount'};
+    $shannon{'totalr'}+=$temptotalr;
+    $shannon{'totalres'}+=$temptotalres;
+    $shannon{'totalf'}+=$temptotalf;
+  }
   print mktablerow(6,'white',"$payments[$i]{'firstname'} <b>$payments[$i]{'surname'}</b>"
   ,$payments[$i]{'accounttype'},"$payments[$i]{'date'} $time",$payments[$i]{'amount'}
   ,$branch);
@@ -67,7 +101,13 @@ for (my $i=0;$i<$count;$i++){
 print mktableft;
 print endcenter;
 print "<p><b>$total</b>";
+#print "<b
+print mktablehdr;
 
+print mktablerow(5,'white',"<b>Levin</b>","Fines $levin{'totalf'}","Rentals $levin{'totalr'}","Reserves $levin{'totalres'}","Total $levin{'total'}");
+print mktablerow(5,'white',"<b>foxton</b>","Fines $foxton{'totalf'}","Rentals $foxton{'totalr'}","Reserves $foxton{'totalres'}","Total $foxton{'total'}");
+print mktablerow(5,'white',"<b>shannon</b>","Fines $shannon{'totalf'}","Rentals $shannon{'totalr'}","Reserves $shannon{'totalres'}","Total $shannon{'total'}");
+print mktableft;
 #my $issues=Count('issue','C',$date,$date2);
 #print "<p>Issues Levin: $issues";
 #$issues=Count('issue','F',$date,$date2);
