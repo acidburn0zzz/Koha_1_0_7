@@ -100,6 +100,7 @@ printend
 if ($biblio eq ''){
   print "<input type=hidden name=existing value=no>";
 }
+
 print <<printend
 <!--$title-->
 <input type=hidden name=ordnum value=$ordnum>
@@ -116,10 +117,12 @@ printend
 ;
 my ($count2,$currencies)=getcurrencies;
 for (my $i=0;$i<$count2;$i++){
-  print "<input type=hidden name=\"$currencies[$i]->{'currency'}\" value=$currencies[0]->{'rate'}>";
+  print "<input type=hidden name=\"$currencies->[$i]->{'currency'}\" value=$currencies->[0]->{'rate'}>\n";
 }
-
-print <<printend;
+if ($data->{'listprice'} > 0){
+  print "<input type=hidden name=orderexists value=yes>\n";
+}
+print <<printend
 <a href=basket.pl?basket=$basket><img src=/images/view-basket.gif width=187 heigth=42 border=0 align=right alt="View Basket"></a> 
 <FONT SIZE=6><em>$ordnum - Order Details </em></FONT><br>
 Shopping Basket For: $booksellers[0]->{'name'}

@@ -39,6 +39,9 @@ my $bibitemnum;
 my $rrp=$input->param('rrp');
 my $ecost=$input->param('ecost');
 my $gst=$input->param('GST');
+#check to see if orderexists
+my $orderexists=$input->param('orderexists');
+
 #check to see if biblio exists
 if ($quantity ne '0'){
 
@@ -57,7 +60,11 @@ if ($quantity ne '0'){
     }
     modbiblio($bibnum,$title,$author,$copyright,$series);
   }
-  neworder($bibnum,$title,$ordnum,$basketno,$quantity,$listprice,$supplier,$who,$notes,$bookfund,$bibitemnum,$rrp,$ecost,$gst);
+  if ($orderexists ne ''){
+    modorder($title,$ordnum,$quantity,$listprice,$bibnum,$basketno,$supplier,$who,$notes,$bookfund,$bibitemnum,$rrp,$ecost,$gst);
+  }else {
+    neworder($bibnum,$title,$ordnum,$basketno,$quantity,$listprice,$supplier,$who,$notes,$bookfund,$bibitemnum,$rrp,$ecost,$gst);
+  }
 } else {
   #print $input->header;
   #print "del";

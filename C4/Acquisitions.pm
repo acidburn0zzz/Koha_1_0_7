@@ -530,11 +530,13 @@ sub delorder {
 }
 
 sub modorder {
-  my ($title,$ordnum,$quantity,$listprice)=@_;
+  my ($title,$ordnum,$quantity,$listprice,$bibnum,$basketno,$supplier,$who,$notes,$bookfund,$bibitemnum,$rrp,$ecost,$gst)=@_;
   my $dbh=C4Connect;
   my $query="update aqorders set title='$title',
-  quantity='$quantity',listprice='$listprice' where
-  ordernum=$ordnum";
+  quantity='$quantity',listprice='$listprice',basketno='$basketno', 
+  rrp='$rrp',ecost='$ecost'
+  where
+  ordernumber=$ordnum and biblionumber=$bibnum";
   my $sth=$dbh->prepare($query);
 #  print $query;
   $sth->execute;
