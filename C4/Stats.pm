@@ -14,7 +14,7 @@ $VERSION = 0.01;
 
 @ISA = qw(Exporter);
 @EXPORT = qw(&UpdateStats &statsreport &Count &Overdues &TotalOwing
-&TotalPaid &getcharges &Getpaidbranch &unfilledreserves);
+&TotalPaid &getcharges &Getpaidbranch &unfilledreserves &gettotals);
 %EXPORT_TAGS = ( );     # eg: TAG => [ qw!name1 name2! ],
 
 # your exported package globals go here,
@@ -152,7 +152,7 @@ sub TotalPaid {
   } else {
     $query.=" and date='$time'";
   }
-#  $query.=" order by timestamp";
+  $query.=" order by timestamp";
   my $sth=$dbh->prepare($query);
   $sth->execute;
   my @results;
@@ -165,6 +165,22 @@ sub TotalPaid {
   $dbh->disconnect; 
 #  print $query;
   return(@results);
+}
+
+sub gettotals {
+  my ($date1,$date2,$branch)=@_;
+  my $dbh=C4Connect;
+  my $query="Select sum(value) from statistics where datetime >= '$date1' and 
+  datetime < '$date2' and branch='$branch' and type='payment'";
+  my $sth=$dbh->prepare($query);
+  $sth->execute;
+  #print $query;
+  my $data=$sth->fetchrow_hashref;
+  $sth->finish;
+  $dbh->disconnect;
+  my $total=$data->{'sum(value)'};
+  $total=$total+0;
+  return($total);
 }
 
 sub getcharges{

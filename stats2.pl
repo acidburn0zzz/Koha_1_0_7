@@ -2,14 +2,13 @@
 
 #written 14/1/2000
 #script to display reports
+#major rewrite by chris@katipo.co.nz 22/11/00
 
 use C4::Stats;
 use strict;
 use Date::Manip;
 use CGI;
 use C4::Output;
-use DBI;
-use C4::Database;
 
 my $input=new CGI;
 my $time=$input->param('time');
@@ -41,39 +40,24 @@ if ($time=~ /\//){
 $date=UnixDate($date,'%Y-%m-%d');
 $date2=UnixDate($date2,'%Y-%m-%d');
 
-my $dbh=C4Connect;
-my $query="select * 
-from accountlines,accountoffsets,borrowers where
-accountlines.borrowernumber=accountoffsets.borrowernumber and
-(accountlines.accountno=accountoffsets.accountno or accountlines.accountno
-=accountoffsets.offsetaccount) and accountlines.timestamp >=20000621000000 
-and borrowers.borrowernumber=accountlines.borrowernumber
-group by accountlines.borrowernumber,accountlines.accountno";
-my $sth=$dbh->prepare($query);
-$sth->execute;
-
-
-
+print mkheadr(1,"$date");
 print mktablehdr;
-while (my $data=$sth->fetchrow_hashref){
-  print "<TR><Td>$data->{'surname'}</td><td>$data->{'description'}</td><td>$data->{'amount'}
-  </td>";
-  if ($data->{'accountype'}='Pay'){
-    my $branch=Getpaidbranch($data->{'timestamp'});
-    print "<td>$branch</td>";
-  }
-  print "</tr>";
-
-}
-
-
+print mktablerow(5,'white','<b>Branch</b>','<b>Issues</b>','<b>Returns</b>','<b>Renewals</b>','<b>Paid</b>');
+my $issues=Count('issue','C',$date,$date2);
+my $returns=Count('return','C',$date,$date2);
+my $renew=Count('renew','C',$date,$date2);
+my $paid=gettotals($date,$date2,'C');
+print mktablerow(5,'white','<b>Levin</b>',$issues,$returns,$renew,$paid);
+$issues=Count('issue','F',$date,$date2);
+$returns=Count('return','F',$date,$date2);
+$renew=Count('renew','F',$date,$date2);
+$paid=gettotals($date,$date2,'F');
+print mktablerow(5,'white','<b>Foxton</b>',$issues,$returns,$renew,$paid);
+$issues=Count('issue','S',$date,$date2);
+$returns=Count('return','S',$date,$date2);
+$renew=Count('renew','S',$date,$date2);
+$paid=gettotals($date,$date2,'S');
+print mktablerow(5,'white','<b>Shannon</b>',$issues,$returns,$renew,$paid);
 print mktableft;
-print endcenter;
-#print "<p><b>$total</b>";
-
-
-
 print endmenu('report');
 print endpage;
-$sth->finish;
-$dbh->disconnect;

@@ -1,10 +1,7 @@
 #!/usr/bin/perl
 #script to provide intranet (librarian) advanced search facility
-#modified 9/11/1999 by chris@katipo.co.nz
-#adding an extra comment to play with CVS (Si, 19/11/99)
-#modified 29/12/99 by chris@katipo.co.nz to be usavle by opac as well
-#modified by chris 10/11/00 to fix dewey search
-
+#modified by chris@katipo.co.nz 3/3/01 to fix glitch with " in titles
+#modified by chris@katipo.co.nz 7/3/01 to as part of the catalogue maintenance module
 use strict;
 use C4::Search;
 use CGI;
@@ -40,6 +37,7 @@ $search{'title'}=$title;
 my $keyword=validate($input->param('keyword'));
 $search{'keyword'}=$keyword;
 $search{'front'}=validate($input->param('front'));
+
 my $author=validate($input->param('author'));
 $search{'author'}=$author;
 my $subject=validate($input->param('subject'));
@@ -66,9 +64,12 @@ if ($num eq ''){
 }
 print startpage();
 print startmenu($type);
+#print $type;
 #print $search{'ttype'};
-if ($type ne 'opac'){
+if ($type eq 'intra'){
   print mkheadr(1,'Catalogue Search Results');
+} elsif ($type eq 'catmain'){
+  print mkheadr(1,'Catalogue Maintenance');
 } else {
   print mkheadr(1,'Opac Search Results');
 }
@@ -85,7 +86,8 @@ if ($itemnumber ne '' || $isbn ne ''){
 #      print "hey";
       ($count,@results)=&KeywordSearch(\$blah,'intra',\%search,$num,$offset);
     } elsif ($search{'front'} ne '') {
-    ($count,@results)&FrontSearch(\$blah,'intra',\%search,$num,$offset);
+     $search{'keyword'}=$search{'front'};
+    ($count,@results)&KeywordSearch(\$blah,'intra',\%search,$num,$offset);
 #    print "hey";
     }elsif ($title ne '' || $author ne '' || $dewey ne '' || $class ne '') {
       ($count,@results)=&CatSearch(\$blah,'loose',\%search,$num,$offset);
@@ -134,6 +136,7 @@ while ($i < $count2){
     $stuff[1]=~ s/\`/\\\'/g;
     my $title2=$stuff[1];
     $title2=~ s/ /%20/g;
+    $title2=~ s/\W//g;
     if ($subject eq ''){
 #      print $stuff[0];
       $stuff[1]=mklink("/cgi-bin/koha/detail.pl?type=$type&bib=$stuff[2]&title=$title2",$stuff[1]);

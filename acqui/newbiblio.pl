@@ -10,7 +10,7 @@ use CGI;
 use strict;
 
 my $input=new CGI;
-print $input->header();
+#print $input->header();
 my $id=$input->param('id');
 my $title=$input->param('title');
 my $author=$input->param('author');
@@ -33,7 +33,9 @@ if ($ordnum eq ''){
   $data=getsingleorder($ordnum);
   $biblio=$data->{'biblionumber'};
 } 
-
+if ($data->{'itemtype'} eq 'PER'){
+  print $input->redirect("/cgi-bin/koha/acqui/newperiodical.pl?id=$id&biblio=$biblio");
+} else {
 print startpage;
 
 print startmenu('acquisitions');
@@ -277,3 +279,4 @@ printend
 print endmenu('acquisitions');
 
 print endpage;
+}

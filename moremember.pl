@@ -5,7 +5,8 @@
 #Displays all the detailas about a borrower
 #needs html removed and to use the C4::Output more, but its tricky
 #last modified 21/1/2000 by chris@katipo.co.nz
-
+#modifiecd 31/1/2001 by chris@katipo.co.nz to not allow items on request
+#to be renewed
 use strict;
 use C4::Output;
 use CGI;
@@ -13,6 +14,7 @@ use C4::Search;
 use Date::Manip;
 use C4::Reserves2;
 use C4::Circulation::Renewals2;
+use C4::Circulation::Circ2;
 my $input = new CGI;
 my $bornum=$input->param('bornum');
 
@@ -89,14 +91,14 @@ print <<printend
 
 <P>
 
-General Notes: <A HREF="popbox.html" onclick="messenger(200,250,'Form that lets you add to and delete notes.'); return false">
-$data->{'borrowernotes'}</a>
+General Notes: <!--<A HREF="popbox.html" onclick="messenger(200,250,'Form that lets you add to and delete notes.'); return false">-->
+$data->{'borrowernotes'}<!--</a>-->
 <p align=right>
 <form action=/cgi-bin/koha/memberentry.pl method=post>
 <input type=hidden name=bornum value=$bornum>
-<INPUT TYPE="image" name="submit"  VALUE="modify" height=42  WIDTH=93 BORDER=0 src="/images/modify-mem.gif"> 
+<INPUT TYPE="image" name="modify"  VALUE="modify" height=42  WIDTH=93 BORDER=0 src="/images/modify-mem.gif"> 
 
-<INPUT TYPE="image" name="submit"  VALUE="delete" height=42  WIDTH=93 BORDER=0 src="/images/delete-mem.gif"> 
+<INPUT TYPE="image" name="delete"  VALUE="delete" height=42  WIDTH=93 BORDER=0 src="/images/delete-mem.gif"> 
 </p>
 
 </TD>
@@ -130,7 +132,13 @@ for (my$i=0;$i<$numaccts;$i++){
     }
     print "<td>$accts->[$i]{'date'}</td>";
 #  print "<TD>$accts->[$i]{'accounttype'}</td>";
-    print "<TD>$accts->[$i]{'description'} $accts->[$i]{'title'}</td>
+    print "<TD>";
+    my $env;
+    if ($accts->[$i]{'accounttype'} ne 'Res'){
+      my $iteminfo=C4::Circulation::Circ2::getiteminformation($env,$accts->[$i]->{'itemnumber'},'');
+      print "<a href=/cgi-bin/koha/moredetail.pl?itemnumber=$accts->[$i]->{'itemnumber'}&bib=$iteminfo->{'biblionumber'}&bi=$iteminfo->{'biblioitemnumber'}>$accts->[$i]->{'description'} $accts->[$i]{'title'}</a>";
+    }
+    print "</td>
     <TD>$amount</td><td>$amount2</td>
     </tr>";
   }
@@ -179,7 +187,9 @@ for (my $i=0;$i<$count;$i++){
   if ($datedue < $today){  
     print "<font color=red>";
   }
-  print "$issue->[$i]{'title'} $issue->[$i]{'barcode'}</td>
+  print "$issue->[$i]{'title'} 
+  <a href=/cgi-bin/koha/moredetail.pl?item=$issue->[$i]->{'itemnumber'}&bib=$issue->[$i]->{'biblionumber'}&bi=$issue->[$i]->{'biblioitemnumber'}>
+  $issue->[$i]{'barcode'}</a></td>
   <TD>$issue->[$i]{'date_due'}</td>";
   #find the charge for an item
   my ($charge,$itemtype)=calc_charges(\%env,$issue->[$i]{'itemnumber'},$bornum);
@@ -194,15 +204,17 @@ for (my $i=0;$i<$count;$i++){
   #check item is not reserved
   my ($rescount,$reserves)=FindReserves($issue->[$i]{'biblionumber'},'');
   if ($rescount >0){
-    print "<TD>On Request";
+    print "<TD><a href=/cgi-bin/koha/request.pl?bib=$issue->[$i]{'biblionumber'}>On Request - no renewals</a></td></tr>";
+  } elsif ($issue->[$i]->{'renewals'} > 0) {
+      print "<TD>Previously Renewed - no renewals</td></tr>";
   } else {
     print "<TD>";
-  }
+  
     print "<input type=radio name=\"renew_item_$issue->[$i]{'itemnumber'}\" value=y>Y
     <input type=radio name=\"renew_item_$issue->[$i]{'itemnumber'}\" value=n>N</td>
     </tr>
     ";
-  
+  }
 }
 print <<printend
 
