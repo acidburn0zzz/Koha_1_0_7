@@ -132,7 +132,9 @@ sub getallorders {
   my $query="Select * from aqorders,biblio,biblioitems where booksellerid='$supid'
   and (cancelledby is NULL or cancelledby = '')
   and biblio.biblionumber=aqorders.biblionumber and biblioitems.biblioitemnumber=                    
-  aqorders.biblioitemnumber group by aqorders.biblioitemnumber order by
+  aqorders.biblioitemnumber 
+  group by aqorders.biblioitemnumber 
+  order by
   biblio.title";
   my $i=0;
   my @results;
@@ -148,7 +150,7 @@ sub getallorders {
 }
 
 sub ordersearch {
-  my ($search,$biblio)=@_;
+  my ($search,$biblio,$catview)=@_;
   my $dbh=C4Connect;
   my $query="Select *,biblio.title from aqorders,biblioitems,biblio
   where aqorders.biblioitemnumber=
@@ -161,8 +163,11 @@ sub ordersearch {
   }
   $query=~ s/ and $//;
   $query.=" ) or biblioitems.isbn='$search' 
-  or (aqorders.ordernumber='$search' and aqorders.biblionumber='$biblio')) 
-  group by aqorders.ordernumber";
+  or (aqorders.ordernumber='$search' and aqorders.biblionumber='$biblio')) ";
+  if ($catview ne 'yes'){
+    $query.=" and quantityreceived < quantity";
+  }
+  $query.=" group by aqorders.ordernumber";
   my $sth=$dbh->prepare($query);
 #  print $query;
   $sth->execute;
@@ -556,6 +561,12 @@ sub modorder {
 #  print $query;
   $sth->execute;
   $sth->finish;
+  $query="update aqorderbreakdown set bookfundid=$bookfund where
+  ordernumber=$ordnum";
+  $sth=$dbh->prepare($query);
+#  print $query;
+  $sth->execute;
+  $sth->finish;
   $dbh->disconnect;
 }
 
@@ -573,7 +584,7 @@ sub newordernum {
 }
 
 sub receiveorder {
-  my ($biblio,$ordnum,$quantrec,$user,$cost,$invoiceno,$bibitemno,$freight)=@_;
+  my ($biblio,$ordnum,$quantrec,$user,$cost,$invoiceno,$bibitemno,$freight,$bookfund)=@_;
   my $dbh=C4Connect;
   my $query="update aqorders set quantityreceived='$quantrec',
   datereceived=now(),booksellerinvoicenumber='$invoiceno',
@@ -584,6 +595,12 @@ sub receiveorder {
   my $sth=$dbh->prepare($query);
   $sth->execute;
   $sth->finish;
+  $query="update aqorderbreakdown set bookfundid=$bookfund where
+  ordernumber=$ordnum";
+  $sth=$dbh->prepare($query);
+#  print $query;
+  $sth->execute;
+  $sth->finish;  
   $dbh->disconnect;
 }
 
