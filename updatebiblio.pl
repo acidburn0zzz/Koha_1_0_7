@@ -7,7 +7,7 @@ use C4::Acquisitions;
 use C4::Output;
 
 my $input= new CGI;
-print $input->header;
+#print $input->header;
 #print $input->dump;
 
 
@@ -33,6 +33,11 @@ my @sub=split(/\|/,$subject);
 
 my $addauthor=checkinp($input->param('Additional'));
 modaddauthor($bibnum,$addauthor);
+my $count1=@sub;
+
+for (my $i=0; $i<$count1; $i++){
+  $sub[$i]=~ s/ +$//;
+}
 
 #print $input->header;
 my $force=$input->param('Force');
