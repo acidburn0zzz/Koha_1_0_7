@@ -400,7 +400,7 @@ sub CatSearch  {
 	    where
             (biblio.biblionumber=bibliosubtitle.biblionumber and
             biblioitems.biblionumber=biblio.biblionumber) and
-	    (((title like '$key[0]%' or title like '% $key[0] %' or title like '% $key[0]')";
+	    (((title like '$key[0]%' or title like '% $key[0]%' or title like '% $key[0]')";
 	    while ($i<$count){
 	      $query=$query." and (title like '$key[$i]%' or title like '% $key[$i]%' or title like '% $key[$i]')";
 	      $i++;
