@@ -3,6 +3,7 @@
 #modified 9/11/1999 by chris@katipo.co.nz
 #adding an extra comment to play with CVS (Si, 19/11/99)
 #modified 29/12/99 by chris@katipo.co.nz to be usavle by opac as well
+#modified by chris 10/11/00 to fix dewey search
 
 use strict;
 use C4::Search;
@@ -253,6 +254,9 @@ my $search;
     if ($class ne ''){
       $keyword=~ s/ /%20/g;
       $search=$search."&class=$class";
+    }
+    if ($dewey ne ''){
+      $search=$search."&dewey=$dewey";
     }
     $search.="&ttype=$ttype";    
 if ($offset < $count){    
