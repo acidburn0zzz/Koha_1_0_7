@@ -186,14 +186,13 @@ sub previousissue {
 
 sub checkreserve{
   # Check for reserves for biblio 
-  # does not look at constraints yet
   my ($env,$dbh,$itemnum)=@_;
   my $resbor = "";
   my $query = "select * from reserves,items 
     where (items.itemnumber = '$itemnum')
     and (reserves.cancellationdate is NULL)
     and (items.biblionumber = reserves.biblionumber)
-    and ((reserves.found = 'W'  and items.itemnumber = reserves.itemnumber)
+    and ((reserves.found = 'W')
     or (reserves.found is null)) 
     order by priority";
   my $sth = $dbh->prepare($query);
