@@ -44,6 +44,7 @@ my $total=0;
 my %levin;
 my %foxton;
 my %shannon;
+my $oldtime;
 #my $totalc=0;
 #my $totalcf=0;
 print mktablehdr;
@@ -62,6 +63,7 @@ for (my $i=0;$i<$count;$i++){
   my $temptotalres=0;
   my $temptotalren=0;
   for (my $i2=0;$i2<$count;$i2++){
+    if ($charges[$i2]->{'amountoutstanding'} != $oldtime){
     print mktablerow(6,'red',$charges[$i2]->{'description'},$charges[$i2]->{'accounttype'},'',
     $charges[$i2]->{'amount'},$charges[$i2]->{'amountoutstanding'});
     if ($charges[$i2]->{'accounttype'} eq 'Rent'){
@@ -76,7 +78,7 @@ for (my $i=0;$i<$count;$i++){
     if ($charges[$i2]->{'accounttype'} eq 'R'){
       $temptotalren+=$charges[$i2]->{'amount'}-$charges[$i2]->{'amountoutstanding'};
     }
-    
+    }
   }                 
   my $time2="$payments[$i]{'date'} $time";
   my $branch=Getpaidbranch($time2);
@@ -104,6 +106,7 @@ for (my $i=0;$i<$count;$i++){
   print mktablerow(6,'white',"$payments[$i]{'firstname'} <b>$payments[$i]{'surname'}</b>"
   ,$payments[$i]{'accounttype'},"$payments[$i]{'date'} $time",$payments[$i]{'amount'}
   ,$branch);
+  $oldtime=$payments[$i]{'timestamp'};
 }
 print mktableft;
 print endcenter;
